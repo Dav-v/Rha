@@ -1,3 +1,11 @@
+/*
+*  Author: Davide Viero - dviero42@gmail.com
+*  Rha raytracer
+*  2019
+*  License: see LICENSE file
+* 
+*/
+
 #pragma once
 
 #include <cstdlib>
@@ -12,7 +20,7 @@ class Light {
            glm::vec3 color
     );
     glm::vec3 position();
-    glm::vec3 color();
+    glm::vec3 getColor();
     private : 
     std::string lightName;
     glm::vec3 lightPosition;

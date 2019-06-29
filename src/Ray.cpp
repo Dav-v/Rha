@@ -1,3 +1,11 @@
+/*
+*  Author: Davide Viero - dviero42@gmail.com
+*  Rha raytracer
+*  2019
+*  License: see LICENSE file
+* 
+*/
+
 #include "ray.h"
 
 using namespace glm;

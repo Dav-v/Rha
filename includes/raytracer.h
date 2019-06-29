@@ -1,3 +1,11 @@
+/*
+*  Author: Davide Viero - dviero42@gmail.com
+*  Rha raytracer
+*  2019
+*  License: see LICENSE file
+* 
+*/
+
 #pragma once
 
 #include <cstdlib>
@@ -5,20 +13,18 @@
 #include <vector>
 #include <iostream>
 
-#include "sphere.h"
+#include "scene.h"
+#include "sceneObject.h"
 #include "light.h"
 #include "ray.h"
 
 class Raytracer
 {
 public:
-  Raytracer(glm::vec3 ambient,glm::vec3 back);
-  glm::vec3 point(float t);
-  glm::vec3 trace(Ray r, std::vector<Sphere *> spheres, std::vector<Light *> lights);
-  std::tuple<bool, Sphere *, float> intersections(Ray r, std::vector<Sphere *> spheres);
+  Raytracer(Scene scene);
+  glm::vec3 trace(Ray r);
+  std::tuple<bool, SceneObject *, float> intersections(Ray r);
 
 private:
-  glm::vec3 backgroundColor;
-  glm::vec3 ambientColor;
-  int depth;
+  Scene scene;
 };

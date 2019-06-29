@@ -1,3 +1,42 @@
+/*
+ *
+ *                                                                               
+*                        ..MMMMMMMMMMMN..                                 
+*                    ZMMMMMMMMMMMMMMMMMMMMMMD.                            
+*              ..MMMMMMMMMMMM.......NMMMMMMMMMMMM..                       
+*          .+MMMMMMMMMI...    ... ..    .. ?MNMMMMMMMM .                  
+*  .MMMMMMMMMMMMMD...  .,NMMMMMMMMMMMMMMM...  ...MMMMMMMMMMMMM            
+*   $MMMMM=...     .MMMMMMMMMMMMMMMMMMMMMMMMMMM.   ....,MMMMMM            
+*             .$MMMMMMMMMMMMMMMMMMMMM,....8MMMMMMMM..                     
+*   .M7MMMMMMMMMMMM.. ..MMMMMMMMMMMMMM       ..$MMMMMMMM...               
+*  .7MMMMMMMMM,.       .MMMMMMMMMMMMMM            ..MMMMMMMMMM            
+*    ....OMMMMMMM..     MMMMMMMMMMMMMM              ..MMMMMMMM            
+*            .MMMMMM,.   MMMMMMMMMMMM           ..MMMMMMM,..MM            
+*               DMMMMMMM~..IMMMMMMM        ..MMMMMMMM.                    
+*               .MMMMMMMMMMMMMM$....:NMMMMMMMMMMM..                       
+*               .MMM.,MMMMMMMMMMMMMMMMMMMMMMM.                            
+*               .MMM. .NMMM.  . . ...  ..                                 
+*        D......MMMM.    MMMN                                             
+*         ZMMMMMMMMM.     MMMM                                            
+*          .MMMMMMMM.     ..MMM8                     .....                
+*           .MMMMMMM.        MMMM.                .MMMMMMMM               
+*            .MMMMMM.         MMMM:             .MMMMMMMMMMM.             
+*             .MMMMM.          .MMMM            .MMMMMM. ?MMM             
+*               MMMM.            MMMMZ          NMMMMMMM  MMM.            
+*               ,MMM.             .MMMM.        .MMMMMMM  MMM             
+*                ~MM.               =MMMM..      ZMMMMM  .MMM             
+*                 MM.                 8MMMMM..      .,  :MMM.             
+*                 .M.                   =MMMMMMM......MMMMM,              
+*                  .                      .+MMMMMMMMMMMMM$                
+*                                               ..NN~..         H A          
+*                                                                 
+*  Author: Davide Viero - dviero42@gmail.com
+*  Rha raytracer
+*  2019
+*  License: see LICENSE file
+* 
+*/
+
 #include <cstdlib>
 #include <cstring>
 #include <thread>
@@ -6,7 +45,8 @@
 #include <vector>
 #include <mutex>
 #include <string>
-#include "sphere.h"
+#include "sceneObject.h"
+#include "sceneParser.h"
 #include "light.h"
 #include "ray.h"
 #include "raytracer.h"
@@ -19,92 +59,23 @@ void save_imageP6(int Width, int Height, char *fname, unsigned char *pixels);
 
 int main(int argc, char *argv[])
 {
+  SceneParser parser(argv[1]);
+  Scene scene = parser.parse();
+ 
+  std::cout << "Loaded parameters:\n"
+    << scene.getObjects().size() << " spheres\n"
+    << scene.getLights().size() << " lights\n";
+  Raytracer rha(scene);
+  
+  std::cout << "Raytracer started with:\n"
+            << "AMBIENT: " << scene.getAmbient()[0] << "\t" << scene.getAmbient()[1] << "\t" << scene.getAmbient()[2]<<std::endl
+            << "BACKGROUND: " << scene.getBackground()[0] << "\t" << scene.getBackground()[1] << "\t" << scene.getBackground()[2]<<std::endl;
 
-  std::fstream inputFile(argv[1], std::ios_base::in);
-
-  float near = 0, left = 0, right = 0, bottom = 0, top = 0;
-  float rX = 0, rY = 0;
-  vec3 background;
-  vec3 ambient;
-  std::string outFile;
-  std::string key;
-
-  std::string name;
-  float x, y, z;
-  float sX, sY, sZ;
-  float r, g, b;
-  float ka, kd, ks, kr, n;
-
-
-  std::vector<Sphere *> spheres;
-  std::vector<Light *> lights;
+  int scaleFactor = (scene.getRY() * scene.getRX()) / 100;
 
   std::vector<vec3> colors;
-  while (inputFile >> key)
-  {
-    if (key == "NEAR")
-      inputFile >> near;
-    else if (key == "LEFT")
-      inputFile >> left;
-    else if (key == "RIGHT")
-      inputFile >> right;
-    else if (key == "BOTTOM")
-      inputFile >> bottom;
-    else if (key == "TOP")
-      inputFile >> top;
-    else if (key == "RES")
-      inputFile >> rX >> rY;
-    else if (key == "SPHERE")
-    {
-      inputFile >> name;
-      inputFile >> x >> y >> z;
-      inputFile >> sX >> sY >> sZ;
-      inputFile >> r >> g >> b;
-      inputFile >> ka >> kd >> ks >> kr >> n;
+  colors.resize(scene.getRY() * scene.getRX());
 
-      vec3 pos(x, y, z);
-      vec3 scale(sX, sY, sZ);
-      vec3 color(r, g, b);
-      spheres.push_back(new Sphere(name, pos, scale, color, ka, kd, ks, kr, n));
-    }
-    else if (key == "LIGHT")
-    {
-      inputFile >> name;
-      inputFile >> x >> y >> z;
-      inputFile >> r >> g >> b;
-
-      vec3 pos(x, y, z);
-      vec3 intensities(r,g, b);
-
-      lights.push_back(new Light(name, pos, intensities));
-    }
-    else if (key == "BACK")
-    {
-      inputFile >> r >> g >> b;
-      background = vec3(r, g, b);
-    }
-    else if (key == "AMBIENT")
-    {
-      inputFile >> r >> g >> b;
-      ambient = vec3(r, g, b);
-    }
-    else if (key == "OUTPUT")
-    {
-      inputFile >> outFile;
-    }
-  }
-  std::cout << "Loaded parameters:\n"
-    << "-" << spheres.size() << " spheres\n"
-    << "-" << lights.size() << " lights\n";
-  Raytracer rha(ambient, background);
-  std::cout << "Raytracer started with:\n"
-            << "AMBIENT: " << ambient[0] << "\t" << ambient[1] << "\t" << ambient[2]<<std::endl
-            << "BACKGROUND: " << background[0] << "\t" << background[1] << "\t" << background[2]<<std::endl;
-
-  int scaleFactor = (int)floor(rY * rX) / 100;
-
-  colors.resize(rX*rY);
-  
   std::vector<std::thread> threads;
   unsigned int num_threads = std::thread::hardware_concurrency() ? std::thread::hardware_concurrency() : 1;
   num_threads = 2;
@@ -114,25 +85,25 @@ int main(int argc, char *argv[])
     std::cout<<"Launching thread number " <<t+1<<" of "<<num_threads<<std::endl;
     
     threads.push_back(std::thread([&] (unsigned int tId) {
-      for (unsigned int i = 0; i < rY; i++)
+      for (unsigned int i = 0; i < scene.getRY(); i++)
       {
-        for (unsigned int k = 0; k < rX; k++)
+        for (unsigned int k = 0; k < scene.getRX(); k++)
         {
-          unsigned int currentElement = i * (int)floor(rY) + k;
-          if ((i * (int)floor(rY) + k) % num_threads == tId)
+          unsigned int currentElement = i * scene.getRY() + k;
+          if ((i * scene.getRY() + k) % num_threads == tId)
           {
             Ray r(
-                abs(near),
-                (abs(left) + abs(right)) / 2.0f,
-                (abs(top) + abs(bottom)) / 2.0f,
-                rX,
-                rY,
+                abs(scene.getNear()),
+                (abs(scene.getLeft()) + abs(scene.getRight())) / 2.0f,
+                (abs(scene.getTop()) + abs(scene.getBottom())) / 2.0f,
+                scene.getRX(),
+                scene.getRY(),
                 i,
                 k);
             if (currentElement % scaleFactor == 0)
-              std::cout << "Shooting ray " << i * rY + k << " , " << (float)(i * rY + k) * 100.0f / (float)(rY * rX) << "%\n";
+              std::cout << "Shooting ray " << i * scene.getRY() + k << " , " << (float)(i * scene.getRY() + k) * 100.0f / (float)(scene.getRY() * scene.getRX()) << "%\n";
             
-            vec3 color = rha.trace(r, spheres, lights);
+            vec3 color = rha.trace(r);
             // No data races - every thread writes only one element every num_threads elements
             colors[currentElement] =color;
           }
@@ -145,8 +116,8 @@ int main(int argc, char *argv[])
     threads[i].join();
   }
 
-  int Width = rX;
-  int Height = rY;
+  int Width = scene.getRX();
+  int Height = scene.getRY();
   unsigned char *pixels;
 
   pixels = new unsigned char[3 * Width * Height];
@@ -183,7 +154,7 @@ int main(int argc, char *argv[])
   }
   */
   char nameF[21];
-  strcpy(nameF, (outFile).c_str());
+  strcpy(nameF, (scene.getOutFile()).c_str());
   save_imageP3(Width, Height, nameF, pixels);
   //save_imageP6(Width, Height, nameF, pixels);
 

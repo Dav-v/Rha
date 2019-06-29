@@ -1,3 +1,11 @@
+/*
+*  Author: Davide Viero - dviero42@gmail.com
+*  Rha raytracer
+*  2019
+*  License: see LICENSE file
+* 
+*/
+
 #pragma once
 
 #include "vec3.hpp"
@@ -15,11 +23,17 @@ class Material{
     float n
   );
   Material(std::string name);
-  private:
-    std::string name;
-    glm::vec3 Kambient;
-    glm::vec3 Kdiffuse;
-    glm::vec3 Kspecular;
-    glm::vec3 Kreflection;
-    float brightness;
+
+  glm::vec3 getKambient();
+  glm::vec3 getKdiffuse();
+  glm::vec3 getKspecular();
+  glm::vec3 getKreflection();
+
+private:
+  std::string name;
+  glm::vec3 Kambient;
+  glm::vec3 Kdiffuse;
+  glm::vec3 Kspecular;
+  glm::vec3 Kreflection;
+  float brightness;
 };

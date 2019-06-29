@@ -1,3 +1,11 @@
+/*
+*  Author: Davide Viero - dviero42@gmail.com
+*  Rha raytracer
+*  2019
+*  License: see LICENSE file
+* 
+*/
+
 #include "light.h"
 
 using namespace glm;
@@ -15,7 +23,7 @@ vec3 Light::position()
 {
   return lightPosition;
 };
-vec3 Light::color()
+vec3 Light::getColor()
 {
   return lightColor;
 }

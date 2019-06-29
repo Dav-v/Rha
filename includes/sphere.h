@@ -1,3 +1,11 @@
+/*
+*  Author: Davide Viero - dviero42@gmail.com
+*  Rha raytracer
+*  2019
+*  License: see LICENSE file
+* 
+*/
+
 #pragma once
 
 #include <cstdlib>
@@ -6,13 +14,6 @@
 #include "sceneObject.h"
 #include "glm.hpp"
 
-struct Coefficients {
-  float ka;
-  float kd;
-  float ks;
-  float kr;
-  float n;
-};
 
 class Sphere : public SceneObject{
   public:
@@ -28,14 +29,6 @@ class Sphere : public SceneObject{
       float n
     );
 
-    std::tuple<bool, std::vector<float>> closestIntersection(Ray r) override;
-    glm::vec3 computeNormal(glm::vec3 point);
-    glm::vec3 localIllum(Ray r, float t, std::vector<Sphere *> spheres, std::vector<Light *> lights, glm::vec3 ambientColor);
-    Coefficients coeff();
-    glm::vec3 color();
+    std::tuple<bool, std::vector<float>> intersections(Ray r) override;
 
-    std::string name;
-  private : 
-    Coefficients coefficients;
-    glm::vec3 sphereColor;
 };
