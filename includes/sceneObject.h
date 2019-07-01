@@ -38,6 +38,7 @@ class SceneObject{
     glm::vec3 getColor() { return color; };
   protected:
     glm::mat4 transform = glm::mat4(1.0f);
+    glm::mat4 normalsTransform = glm::mat4(1.0f);
     glm::mat4 invTransform = glm::mat4(1.0f);
     glm::mat4 invNormalsTransform = glm::mat4(1.0f);
     Material material;

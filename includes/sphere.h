@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include <cstdlib>
-#include <iostream>
 #include <string>
 #include "sceneObject.h"
 #include "glm.hpp"

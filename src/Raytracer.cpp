@@ -27,11 +27,11 @@ std::tuple<bool,SceneObject*, float> Raytracer::intersections(Ray r)
     auto intersections = objects[i]->intersections(r);
     if(std::get<bool>(intersections)){
       auto intersectionsVec = std::get<std::vector<float>>(intersections);
-      for(unsigned int k = 0; k < intersectionsVec.size();k++)
+      for(auto& intersection :intersectionsVec)
       {
-        if (intersectionsVec[k] < closestT && intersectionsVec[k] > 0.0001f)
+        if (intersection < closestT && intersection > 0.0001f)
         {
-          closestT = intersectionsVec[k];
+          closestT = intersection;
           hitObject = objects[i];
           std::get<bool>(finalResult) = true;
         }

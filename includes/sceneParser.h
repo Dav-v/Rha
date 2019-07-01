@@ -9,7 +9,6 @@
 #pragma once
 
 #include <string>
-#include "sceneObject.h"
 #include "scene.h"
 
 class SceneParser

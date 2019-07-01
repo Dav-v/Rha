@@ -23,46 +23,46 @@ vec3 SceneObject::localIllum(Ray r, float t, std::vector<SceneObject *> objects,
   vec3 normal = computeNormal(p);
   vec3 icolor = color * ambientColor * coefficients.ka;
   std::vector<Light *> illumLights;
-  for (unsigned int i = 0; i < lights.size(); i++)
+  for (auto light: lights)
   {
     bool isVisible = true;
-    vec3 dir = lights[i]->position() - p;
+    vec3 dir = light->position() - p;
 
-    for (unsigned int k = 0; k < objects.size(); k++)
+    for (auto object: objects)
     {
-      std::tuple<bool, std::vector<float>> result = objects[k]->intersections(Ray(dir, p));
+      std::tuple<bool, std::vector<float>> result = object->intersections(Ray(dir, p));
       if (std::get<bool>(result))
       {
-        float t0 = std::get<std::vector<float>>(result)[0];
-        float t1 = std::get<std::vector<float>>(result)[1];
-        if ((t0 > 0.0001f && t0 < .9999f) ||
-            (t1 > 0.0001f && t1 < .9999f))
+        for (auto &t: std::get<std::vector<float>>(result))
         {
-          isVisible = false;
-          break;
+          if (t > 0.0001f && t < .9999f)
+          {
+            isVisible = false;
+            break;
+          }
         }
       }
     }
     if (isVisible)
-      illumLights.push_back(lights[i]);
+      illumLights.push_back(light);
   }
 
-  for (unsigned int i = 0; i < illumLights.size(); i++)
+  for (auto illumLight: illumLights)
   {
-    vec3 l = normalize(illumLights[i]->position() - p);
+    vec3 l = normalize(illumLight->position() - p);
     // diffuse
 
     if (dot(normalize(r.getDirectionVector()), normal) <= 0.0f)
     {
       //return vec3(1.0, 0, 0);
-      icolor += illumLights[i]->getColor() * coefficients.kd *
+      icolor += illumLight->getColor() * coefficients.kd *
                (max(dot(normal, l), 0.0f) * color);
     }
     // specular
     vec3 v = normalize(r.getDirectionVector());
     vec3 ref = normalize(reflect(l, normal));
 
-    icolor += illumLights[i]->getColor() * coefficients.ks *
+    icolor += illumLight->getColor() * coefficients.ks *
              pow(clamp(dot(ref, v), 0.0f, 1.0f), coefficients.n);
   }
   return icolor;

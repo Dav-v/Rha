@@ -12,6 +12,8 @@
 
 #include "sceneParser.h"
 #include "sphere.h"
+#include "plane.h"
+#include "cylinder.h"
 #include "light.h"
 #include "ray.h"
 #include "scene.h"
@@ -68,6 +70,32 @@ Scene SceneParser::parse()
       vec3 scale(sX, sY, sZ);
       vec3 color(r, g, b);
       objects.push_back(new Sphere(name, pos, scale, color, ka, kd, ks, kr, n));
+    }
+    else if (key == "PLANE")
+    {
+      inputFile >> name;
+      inputFile >> x >> y >> z;
+      inputFile >> sX >> sY >> sZ;
+      inputFile >> r >> g >> b;
+      inputFile >> ka >> kd >> ks >> kr >> n;
+
+      vec3 pos(x, y, z);
+      vec3 scale(sX, sY, sZ);
+      vec3 color(r, g, b);
+      objects.push_back(new Plane(name, pos, scale, color, ka, kd, ks, kr, n));
+    }
+    else if (key == "CYLINDER")
+    {
+      inputFile >> name;
+      inputFile >> x >> y >> z;
+      inputFile >> sX >> sY >> sZ;
+      inputFile >> r >> g >> b;
+      inputFile >> ka >> kd >> ks >> kr >> n;
+
+      vec3 pos(x, y, z);
+      vec3 scale(sX, sY, sZ);
+      vec3 color(r, g, b);
+      objects.push_back(new Cylinder(name, pos, scale, color, ka, kd, ks, kr, n));
     }
     else if (key == "LIGHT")
     {

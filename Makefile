@@ -4,7 +4,7 @@ CXXFLAGS=-Wall -pthread -std=c++14 -O2
 INCLUDES=-I./includes -I./glm/glm
 
 # list source code files for server executable
-RAYTRACER_SRCS=src/main.cpp src/Light.cpp  src/Material.cpp  src/Ray.cpp  src/Raytracer.cpp  src/Scene.cpp src/SceneObject.cpp src/Material.cpp src/SceneParser.cpp src/Sphere.cpp
+RAYTRACER_SRCS=src/main.cpp src/Light.cpp  src/Material.cpp  src/Ray.cpp  src/Raytracer.cpp  src/Scene.cpp src/SceneObject.cpp src/Material.cpp src/SceneParser.cpp src/Sphere.cpp src/Plane.cpp  src/Cylinder.cpp
 
 
 RAYTRACER_OBJS=$(RAYTRACER_SRCS:.c=.o)
