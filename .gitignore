@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+# VSCode objects
+
+.vscode/
+
+#Other stuff on my pc
+cylinder
+tests/
+*.txt
+*.ppm
